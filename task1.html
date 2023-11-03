@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Swapping</title>
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .button {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Buttons -->
+<button class="button">1</button>
+<button class="button">2</button>
+<button class="button">3</button>
+
+<script>
+    // Wait for the document to be ready
+    $(document).ready(function() {
+        // Add click event listener to all buttons with class 'button'
+        $('.button').click(function() {
+            // Get the index of the clicked button among its siblings
+            var index = $(this).index();
+
+            // Get the previous and next buttons
+            var prevButton = $(this).prev('.button');
+            var nextButton = $(this).next('.button');
+
+            // If the button has a previous neighbor, swap positions with it
+            if (prevButton.length > 0) {
+                $(this).insertBefore(prevButton);
+            }
+            // If the button does not have a previous neighbor but has a next neighbor, swap positions with it
+            else if (nextButton.length > 0) {
+                $(this).insertAfter(nextButton);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

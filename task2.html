@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Table</title>
+    <!-- Include jQuery library -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Table to display data -->
+    <table id="data-table">
+        <!-- Table header -->
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Datetime</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <!-- Table body will be populated using JavaScript -->
+        <tbody></tbody>
+    </table>
+
+    <!-- Button to add new entry -->
+    <button id="add-entry-btn">Add New Entry</button>
+
+    <script>
+        // Mock data (you can replace this with actual backend response)
+        var mockData = [
+            { id: 1, name: "Entry 1", datetime: "2023-11-03 10:30:00" },
+            { id: 2, name: "Entry 2", datetime: "2023-11-03 11:00:00" }
+        ];
+
+        // Higher-order function to handle actions for each row
+        function createRowActions(entry, onUpdate, onDelete) {
+            return {
+                edit: function () {
+                    entry.isEditing = true;
+                    renderTable(mockData);
+                },
+                save: function () {
+                    entry.isEditing = false;
+                    onUpdate(entry);
+                },
+                delete: function () {
+                    onDelete(entry);
+                }
+            };
+        }
+
+        // Function to render table rows with data
+        function renderTable(data) {
+            var tableBody = $('#data-table tbody');
+            tableBody.empty(); // Clear existing table rows
+            data.forEach(function (entry) {
+                var actions = createRowActions(entry, onUpdateEntry, onDeleteEntry);
+                var row = $('<tr>').append(
+                    $('<td>').text(entry.id),
+                    $('<td>').append(entry.isEditing ?
+                        $('<input class="name-input" type="text" value="' + entry.name + '">') :
+                        entry.name),
+                    $('<td>').text(entry.datetime),
+                    $('<td>').append(
+                        entry.isEditing ?
+                            $('<button class="save-btn">Save</button>').on('click', function () {
+                                actions.save();
+                            }) :
+                            $('<button class="edit-btn">Edit</button>').on('click', actions.edit),
+                        $('<button class="delete-btn">Delete</button>').on('click', actions.delete)
+                    )
+                );
+                tableBody.append(row);
+            });
+        }
+
+        // Function to handle delete action
+        function onDeleteEntry(entry) {
+            mockData = mockData.filter(item => item.id !== entry.id);
+            renderTable(mockData);
+        }
+
+        // Function to handle update action
+        function onUpdateEntry(entry) {
+            entry.name = $('.name-input').val();
+            renderTable(mockData);
+        }
+
+        // Function to handle add new entry action
+        function onAddNewEntry() {
+            var newId = mockData.length + 1;
+            var newEntry = { id: newId, name: 'New Entry ' + newId, datetime: '2023-11-03 12:00:00', isEditing: true };
+            mockData.push(newEntry);
+            renderTable(mockData);
+        }
+
+        // Event listener for the "Add New Entry" button
+        $('#add-entry-btn').on('click', onAddNewEntry);
+
+        // Initialize the table
+        renderTable(mockData);
+    </script>
+
+</body>
+
+</html>
